@@ -13,7 +13,7 @@ const createBooks = async function (req, res) {
 
     const data = req.body;
     
-    if (Object.keys(data) == 0) { return res.status(400).send({ status: false, message: 'plz provide Data' }) }// When body have No data
+    if (Object.keys(data).length == 0) { return res.status(400).send({ status: false, message: 'plz provide Data' }) }// When body have No data
 
     //===========================validate by using validetor folder(by using Regex and somthing)===============================//
 
@@ -214,7 +214,7 @@ const updateById = async function (req, res) {
     const data = req.body
 
     
-    if (Object.keys(data) == 0) {
+    if (Object.keys(data).length == 0) {
       return res.status(400).send({ status: false, message: "Provide data to update" })
     }
 
