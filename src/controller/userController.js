@@ -25,3 +25,7 @@ const { isIdValid, isValidString, isValidISBN, isValidDate, isValidName,isValidI
     res.status(500).send({status:false,message:err.message})
         }
     }
+
+
+
+    module.exports.getUserProfile = getUserProfile
