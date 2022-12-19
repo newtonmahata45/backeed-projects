@@ -3,8 +3,8 @@ const router = express.Router();
 const userController =  require ("../controller/userController")
 
 
-//<<<<<<<<------------------- User Api -------------------->>>>>>>>>>>>>
-router.post("/register",  userController. getUserProfile)
+//<<<<<<<<------------------- Get User Api -------------------->>>>>>>>>>>>>
+router.get("/user/:userId/profile",  userController. getUserProfile)
 
 
 
