@@ -4,22 +4,22 @@ const bcrypt =require("bcrypt")
 const userModel = require("../model/userModel")
 
 const userModel = require("../model/userModel")
-const { isIdValid, isValidString, isValidISBN, isValidDate, isValidName,isValidImage } = require("../validators/validator")
+const { isIdValid, isValidString, isValidName,isValidPassword,isValidEmail } = require("../validators/validator")
 
 
 
 let userLogin = async function (req,res){
     let credentials = req.body
-    let { email, password } = credentials  
+    let { email, password } = credentials 
     
-    
+       
     if (Object.keys(credentials) == 0) {
         return res.status(400).send({ status: false, message: "email and password are required for Log in" })
     }
     if (!email) { return res.status(400).send({ status: false, message: "email is mandatory" }) }
     if (!password) { return res.status(400).send({ status: false, message: "password is mandatory" }) }
 
-    if (email.length == 0 || password.length == 0) {
+    if (email.trim.length == 0 || password.trim.length == 0) {
         return res.status(400).send({ status: false, message: "both fields are required." })
     }
     

@@ -18,7 +18,8 @@ const isIdValid = function (value) {
 
 const isValidString = function (value) {
   if (typeof value === "undefined" || value === null) return false;
-  //if (typeof value === "string" && value.trim().length === 0) return false;
+  if(typeof value !== "string") return false
+  if (typeof value === "string" && value.trim().length === 0) return false;
   return true;
 };
 
@@ -48,43 +49,33 @@ const isValidPincode = function (pincode) {
 
 //==============================// isValidPassword //===============================
 
-   const isValidPassword = function (pwd) {
-    let passwordRegex =
-      /^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$%^&*-]).{8,15}$/;
-  
-    if (passwordRegex.test(pwd)) {
-      return true;
-    } else {
-      return false;
-    }
-  }
-  
-    //==============================// isValidISBN //===============================
+const isValidPassword = function (pwd) {
+let passwordRegex =
+    /^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$%^&*-]).{8,15}$/;
 
-    const isValidISBN = function(ISBN){
-      let ISBNRegex = /^(?=(?:\D*\d){10}(?:(?:\D*\d){3})?$)/
-      if(ISBNRegex.test(ISBN)){
-        return true
-      }else{
-        return false
-      }
-    }
-  //==============================// isValidDate //===============================
-      const isValidDate = function(value){
-        let dateFormatRegex = /^[0-9]{4}-(0[1-9]|1[0-2])-(0[1-9]|[1-2][0-9]|3[0-1])$/
-       if(dateFormatRegex.test(value)){
-        return true
-       }else{
-        return false
-       } 
-      }
-      //==============================// isValidRating //===============================
+if (passwordRegex.test(pwd)) {
+    return true;
+} else {
+    return false;
+}
+}
 
-      const isValidRating = function(rating){
-        let ratingFormatRegex = /([1-5])/
-        if(ratingFormatRegex.test(rating) && typeof(rating)==="number" )
-          return true
-      }
+//==============================// isValidDate //===============================
+    const isValidDate = function(value){
+    let dateFormatRegex = /^[0-9]{4}-(0[1-9]|1[0-2])-(0[1-9]|[1-2][0-9]|3[0-1])$/
+    if(dateFormatRegex.test(value)){
+    return true
+    }else{
+    return false
+    } 
+    }
+    //==============================// isValidRating //===============================
+
+    const isValidRating = function(rating){
+    let ratingFormatRegex = /([1-5])/
+    if(ratingFormatRegex.test(rating) && typeof(rating)==="number" )
+        return true
+    }
 
 
 //=============================// isValidImage //==============================
