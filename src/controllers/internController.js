@@ -5,10 +5,11 @@ const { isValid, nameReg , fullnameReg, logoRegex, emailTest , mobileTest } = re
 
 
 const interns = async function (req, res) {
+  res.setHeader('Access-Control-Allow-Origin','*')
     try {
         
         let data = req.body 
-        const { name, email, mobile ,collegeName} = data 
+        const { name, email, mobile ,collegeName } = data 
 
         //VALIDATION FOR EMPTY VALUES.
 

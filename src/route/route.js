@@ -11,7 +11,7 @@ router.post("/functionup/colleges", collegeController.createCollege)
 router.post("/functionup/interns", internController.interns)
 
 //to get list for all the interns
-router.get("/functionup/collegeDetails", collegeController.listOfCollageIntern)
+router.get("/functionup/collegeDetails", collegeController.collegeDetailsApi)
 
 // Validating
 router.all("/*", function (req, res) {
