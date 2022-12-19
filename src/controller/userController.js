@@ -7,10 +7,14 @@ const { isIdValid, isValidString, isValidISBN, isValidDate, isValidName,isValidI
      const getUserProfile = function(req,res) {
         try{
              let userId = req.params.userId
+             // UserId Validation :-
              if(!userId) {
                 return res.status(400).send({status:false,message:"Please provide userId"})
              }
-    
+             if(isIdValid(userId)) {
+                return res.status(400).send({status:false,message:"userId not valid"})
+             }
+             
              const findUser = userModel.findbyId(userId)
              if(!findUser) {
                 return res.status(404).send({status:false,message:"User not found"})
