@@ -219,4 +219,5 @@ let updateUserProfile = async function(req,res) {
     }
 }
 
-module.exports = { userLogin, getUserProfile, registerUser,updateUserProfile }
+    module.exports= {getUserProfile,registerUser}
+    
