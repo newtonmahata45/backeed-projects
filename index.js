@@ -1,24 +1,26 @@
 const express = require("express")
 const mongoose = require("mongoose")
 const route = require("./src/routes/route")
+const multer= require("multer");
+const { AppConfig } = require('aws-sdk');
 
 const app = express()
 
 app.use(express.json())
 
+app.use( multer().any())
+
 mongoose.connect("mongodb+srv://group22:1234@group22databse.uvtoalh.mongodb.net/group9Database",
-{useNewUrlParser:true})
+    { useNewUrlParser: true }, mongoose.set('strictQuery', false))
 
-.then(()=> console.log("MongoDb is connected"))
-.catch((err)=> console.log(err) )
- 
-app.use("/",route)
+    .then(() => console.log("MongoDb is connected"))
+    .catch((err) => console.log(err))
 
-
+app.use("/", route)
 
 
 const PORT = 3000
 
-app.listen(PORT,()=>{
+app.listen(PORT, () => {
     console.log(`Express app is running on port ${PORT}`)
 })

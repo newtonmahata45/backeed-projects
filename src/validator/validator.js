@@ -10,15 +10,17 @@ const isValidEmail = function (value) {
 
 //============================// idCharacterValid //============================
 
-const isIdValid = function (value) {
-  return mongoose.Types.ObjectId.isValid(value); 
-};
+const isValidObjectId = function (objectId) {
+  var valid = mongoose.Types.ObjectId.isValid(objectId)
+  if(!valid){ return false }
+  else{return true}
+}
 
 //==========================// isValidString //==================================
 
 const isValidString = function (value) {
   if (typeof value === "undefined" || value === null) return false;
-  if(typeof value !== "string") return false
+  if (typeof value !== "string") return false
   if (typeof value === "string" && value.trim().length === 0) return false;
   return true;
 };
@@ -29,65 +31,58 @@ const isValidName = function (name) {
   if (/^[a-zA-Z ,.'-]+$/.test(name)) {
     return true;
   }
+  return false
 };
 
 //==============================// isValidMobile //===============================
 
 const isValidMobile = function (mobile) {
- if (/^[0]?[6789]\d{9}$/.test(mobile)){
+  if (/^[0]?[6789]\d{9}$/.test(mobile)) {
     return true
- }
+  }
+  return false
 }
 
 //==============================// isValidPincode //===============================
 
 const isValidPincode = function (pincode) {
-    if (/^[1-9][0-9]{5}$/.test(pincode)){
-       return true
-    }
-   }
+  if (/^[1-9][0-9]{5}$/.test(pincode)) {
+    return true
+  }
+  return false
+}
 
 //==============================// isValidPassword //===============================
 
 const isValidPassword = function (pwd) {
-let passwordRegex =
+  let passwordRegex =
     /^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$%^&*-]).{8,15}$/;
-
-if (passwordRegex.test(pwd)) {
+  if (passwordRegex.test(pwd)) {
     return true;
-} else {
+  } else {
     return false;
-}
+  }
 }
 
 //==============================// isValidDate //===============================
-    const isValidDate = function(value){
-    let dateFormatRegex = /^[0-9]{4}-(0[1-9]|1[0-2])-(0[1-9]|[1-2][0-9]|3[0-1])$/
-    if(dateFormatRegex.test(value)){
+const isValidDate = function (value) {
+  let dateFormatRegex = /^[0-9]{4}-(0[1-9]|1[0-2])-(0[1-9]|[1-2][0-9]|3[0-1])$/
+  if (dateFormatRegex.test(value)) {
     return true
-    }else{
+  } else {
     return false
-    } 
-    }
-    //==============================// isValidRating //===============================
-
-    const isValidRating = function(rating){
-    let ratingFormatRegex = /([1-5])/
-    if(ratingFormatRegex.test(rating) && typeof(rating)==="number" )
-        return true
-    }
-
-
+  }
+}
 //=============================// isValidImage //==============================
-     
-      const isValidImage = function(value){
-        let imageRegex = /^(https?:\/\/.*\/.*\.(png|gif|webp|jpeg|jpg)\??.*$)/
-        if(imageRegex.test(value)){
-          return true
-        }else {
-          return false
-        }
-      }
+
+const isValidImage = function (value) {
+  let imageRegex = /^(https?:\/\/.*\/.*\.(png|gif|webp|jpeg|jpg)\??.*$)/
+  if (imageRegex.test(value)) {
+    return true
+  } else {
+    return false
+  }
+}
 //=============================// module exports //==============================
 
-module.exports = { isValidEmail, isIdValid, isValidString,isValidPassword,isValidName,isValidMobile,isValidPincode, isValidISBN, isValidDate,isValidRating,isValidImage}
+module.exports = { isValidEmail, isValidObjectId, isValidString, isValidPassword, isValidName, isValidMobile, isValidPincode, isValidDate, isValidImage }
