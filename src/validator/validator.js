@@ -28,6 +28,8 @@ const isValidString = function (value) {
 //==============================// isValidName //===============================
 
 const isValidName = function (name) {
+  
+  if(name.trim().length === 0){return false}
   if (/^[a-zA-Z ,.'-]+$/.test(name)) {
     return true;
   }
@@ -76,11 +78,10 @@ const isValidDate = function (value) {
 //=============================// isValidImage //==============================
 
 const isValidImage = function (value) {
-  let imageRegex = /^(https?:\/\/.*\/.*\.(png|gif|webp|jpeg|jpg)\??.*$)/
+  let imageRegex =/\.(gif|jpe?g|tiff?|png|webp|bmp)$/i
+
   if (imageRegex.test(value)) {
     return true
-  } else {
-    return false
   }
 }
 //=============================// module exports //==============================
