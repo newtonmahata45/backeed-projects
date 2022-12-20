@@ -9,8 +9,9 @@ exports.getProducts = async(req,res)=>{
     }
     if(Object.keys(req.query).length > 0){
         req.query.isDeleted = false
-        let size = req.query.size//.toUpperCase() //availableSizes
+        let size = req.query.size //availableSizes
         let name = req.query.name // title
+        if(size){ size = size.toUpperCase()}
 
         const filteredProducts = await productModel.find({$or:[{availableSizes:{$in:size}},{title:{$regex:name}}]})
 
