@@ -6,6 +6,14 @@ exports.getProducts = async(req,res)=>{
     if(Object.keys(req.query).length == 0){
     const products = await productModel.find({isDeleted:false})
     }
+    if(size){
+        let data = await productModel.find({availableSizes : { $in: [size] },isDeleted:false})
+
+        // let sizedata = data.forEach((i)=>{
+        //     i.availableSizes.includes(size)
+        // })
+        console.log(data)
+    }
     if(Object.keys(req.query).length > 0){
         req.query.isDeleted = false
         const filteredProducts = await productModel.find(req.query)
