@@ -50,8 +50,6 @@ const registerUser = async (req, res) => {
         const isEmailAlreadyUsed = await userModel.findOne({ email: email })
         if (isEmailAlreadyUsed) return res.status(400).send({ status: false, message: `This ${email} email is  already exists, please provide another email` })
 
-
-
         // ENCRYPTING PASSWORD
         let saltRounds = 10;
         let salt = await bcrypt.genSalt(saltRounds);
