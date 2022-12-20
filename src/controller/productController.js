@@ -5,6 +5,7 @@ const productModel = require("../model/productModel")
 exports.getProducts = async(req,res)=>{
     if(Object.keys(req.query).length == 0){
     const products = await productModel.find({isDeleted:false})
+    return res.status(200).send({status:true,message:"Searched Results",data:products})
     }
     if(size){
         let data = await productModel.find({availableSizes : { $in: [size] },isDeleted:false})
@@ -16,7 +17,14 @@ exports.getProducts = async(req,res)=>{
     }
     if(Object.keys(req.query).length > 0){
         req.query.isDeleted = false
-        const filteredProducts = await productModel.find(req.query)
+        let size = req.query.size //availableSizes
+        let name = req.query.name // title
+        if(size){ size = size.toUpperCase()}
+
+        const filteredProducts = await productModel.find({$or:[{availableSizes:{$in:size}},{title:{$regex:name}}]})
+
+        if(!filteredProducts) return res.status(400).send({status:false,message:"No Results Found"})
+        return res.status(200).send({status:true,message:"Search Results",data:filteredProducts})
     }
 }
 
