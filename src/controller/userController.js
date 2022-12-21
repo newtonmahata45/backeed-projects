@@ -20,6 +20,7 @@ const registerUser = async (req, res) => {
         if (!email) { return res.status(400).send({ status: false, message: "email is mandatory" }) }
         if (profileImage.length === 0) { return res.status(400).send({ status: false, message: "profileImage is mandatory" }) }
         if (!phone) { return res.status(400).send({ status: false, message: "phone is mandatory" }) }
+
         if (!password) { return res.status(400).send({ status: false, message: "password is mandatory" }) }
         if (!address) { return res.status(400).send({ status: false, message: "address is mandatory" }) }
         if (!address.shipping) { return res.status(400).send({ status: false, message: "shipping address is mandatory" }) }
@@ -148,10 +149,9 @@ let updateUserProfile = async function(req,res) {
         let body = req.body
         let profileImage = req.files
         let {address,fname,lname,email,password,phone} = body
+        // console.log(profileImage[0])
         
-        
-        
-        if(Object.keys(body).length == 0) return res.send({status:false, message:"Provide some data inside the body to update"})
+        if(Object.keys(body).length == 0 && profileImage.length == 0) return res.send({status:false, message:"Provide some data inside the body to update"})
         
         if(!userId) return res.status(400).send({status:false, message:"Please provide UserId"})
         if (!isValidObjectId(userId)) {  return res.status(400).send({ status: false, message: "userId is not valid" }) }
@@ -165,7 +165,7 @@ let updateUserProfile = async function(req,res) {
         if(email){
         if (!isValidEmail(email)) { return res.status(400).send({ status: false, message: "email is not valid" }) }
         }
-        if(profileImage.length == 0){
+        if(profileImage.length > 0){
         if (!isValidImage(profileImage[0].originalname)) { return res.status(400).send({ status: false, message: "Profile Image formate is not valid" }) }
         }
         if(phone){
@@ -210,7 +210,7 @@ let updateUserProfile = async function(req,res) {
         
         //  Create : aws link for profile image
         if (profileImage.length > 0) { var uploadedFileURL = await aws.uploadFile(profileImage[0])
-            body.profileImage = uploadedFileURL; 
+            body.profileImage = uploadedFileURL;
         }
 
         let updateUserData = await userModel.findOneAndUpdate({_id:userId},{$set:body},{new:true})
@@ -220,4 +220,4 @@ let updateUserProfile = async function(req,res) {
     }
 }
 
-module.exports = { userLogin, getUserProfile, registerUser,updateUserProfile }
+module.exports = { userLogin, getUserProfile, registerUser, updateUserProfile }

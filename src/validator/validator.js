@@ -20,12 +20,12 @@ const isValidObjectId = function (objectId) {
 
 const isValidString = function (value) {
   if (typeof value === "undefined" || value === null) return false;
-  if (typeof value !== "string") return false
-  if (typeof value === "string" && value.trim().length === 0) return false;
+  if (typeof value !== "string") return false;
+  if (value.trim().length === 0) return false;
   return true;
 };
 
-//==============================// isValidName //===============================
+//==============================// isValidName //================================
 
 const isValidName = function (name) {
   
@@ -84,6 +84,21 @@ const isValidImage = function (value) {
     return true
   }
 }
+
+const isNumber= function (value) {
+  if (typeof (value) === 'undefined' || typeof (value) === 'null') return false
+  if (typeof (value) === 'number') return true
+
+}
+//=======
+const isValidSize = function (value) {
+  let enumValue = ["S", "XS", "M", "X", "L", "XXL", "XL"]
+  for (let x of value) {
+      if (enumValue.includes(x) == false)  return false
+  }
+  return true;
+}
+
 //=============================// module exports //==============================
 
-module.exports = { isValidEmail, isValidObjectId, isValidString, isValidPassword, isValidName, isValidMobile, isValidPincode, isValidDate, isValidImage }
+module.exports = {isNumber,isValidSize, isValidEmail, isValidObjectId, isValidString, isValidPassword, isValidName, isValidMobile, isValidPincode, isValidDate, isValidImage }
