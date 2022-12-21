@@ -84,6 +84,15 @@ const isValidImage = function (value) {
     return true
   }
 }
+//==================================// //======================================
+const isValidSize = function (value) {
+  let enumValue = ["S", "XS", "M", "X", "L", "XXL", "XL"]
+  for (let x of value) {
+      if (enumValue.includes(x) == false)  return false
+  }
+  return true;
+}
+
 //=============================// module exports //==============================
 
-module.exports = { isValidEmail, isValidObjectId, isValidString, isValidPassword, isValidName, isValidMobile, isValidPincode, isValidDate, isValidImage }
+module.exports = { isValidEmail, isValidObjectId, isValidString, isValidPassword, isValidName, isValidMobile, isValidPincode, isValidDate, isValidImage,isValidSize }
