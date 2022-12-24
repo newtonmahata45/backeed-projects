@@ -27,6 +27,4 @@ router.delete("/user/:userId/cart",auth.authenticate,auth.authorization, cartCon
 router.put("/users/:userId/cart",cartController.updateCart)
 
 
-
-
 module.exports = router;
