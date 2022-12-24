@@ -46,8 +46,8 @@ const authorization = async function (req, res, next) {
     try {
         const userId = req.params.userId
         if (!isValidObjectId(userId)) { return res.status(400).send({ status: false, message: 'Please provide a valid UserId' }) }
-        let user = await userModel.findById(userId)
-        if (!user) { return res.status(404).send({ status: false, message: 'User does not exists' }) }
+        // let user = await userModel.findById(userId)
+        // if (!user) { return res.status(404).send({ status: false, message: 'User does not exists' }) }
 
         let tokenUserId = req.loginUserId // token Id
         if (tokenUserId != userId) { return res.status(403).send({ status: false, message: "You are not authorised to perform this task" }) }

@@ -12,7 +12,8 @@ const cartShema = new mongoose.Schema({
         _id: false
     }],
     totalPrice: {type:Number, require:true},
-    totalItems: {type:Number, require:true}
+    totalItems: {type:Number, require:true},
+    __v: false
   
 }, { timestamps: true })
 

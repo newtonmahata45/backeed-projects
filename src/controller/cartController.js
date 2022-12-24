@@ -70,7 +70,6 @@ const updateCart = async function (req, res) {
         if (removeProduct != 0 && removeProduct != 1) { return res.status(400).send({ status: false, message: "removeProduct can be 0 or 1" }) }
 
         const theCart = await cartModel.findById(cartId).select({ userId: 0, _id: 0, __v: 0 })
-        // const theCart = cartExist.toObject()
         if (!theCart) return res.status(404).send({ status: false, message: "Cart does not found" })
         const product = await productModel.findOne({ _id: productId }, { isdeleted: false })
         if (!product) return res.status(404).send({ status: false, message: "Product does not found" })
@@ -126,7 +125,7 @@ const getCartSummary = async function (req, res) {
         let userId = req.params.userId
         if (!isValidObjectId(userId)) return res.status(400).send({ status: false, message: "Invalid userId" })
 
-        const getCart = await cartModel.findOne({ userId: userId }).populate({ path: "items.productId", model: "product" })
+        const getCart = await cartModel.findOne({ userId: userId }).populate({ path: "items.productId", model: "product" }).select("-items._id")
         if (!getCart) { return res.status(404).send({ status: false, message: "Your cart is not found" }) }
         if (getCart.items.length == 0) { return res.status(200).send({ status: true, message: "Your Shopping cart is empty", data: getCart }) }
         return res.send({ status: true, message: "Here is your cart", data: getCart })

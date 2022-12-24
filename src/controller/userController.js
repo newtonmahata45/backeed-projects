@@ -11,10 +11,10 @@ const registerUser = async (req, res) => {
     try {
         let data = req.body
         const profileImage = req.files
-        let { fname, lname, phone,email, password, address } = data
+        let { fname, lname, phone, email, password, address } = data
         //  CHECK  if request body is empty
         if (!Object.keys(data).length > 0) return res.status(400).send({ status: false, error: "Please enter data" })
-        
+
         if (!fname) { return res.status(400).send({ status: false, message: "fname is mandatory" }) }
         if (!lname) { return res.status(400).send({ status: false, message: "lname is mandatory" }) }
         if (!email) { return res.status(400).send({ status: false, message: "email is mandatory" }) }
@@ -23,11 +23,11 @@ const registerUser = async (req, res) => {
         if (!phone) { return res.status(400).send({ status: false, message: "phone is mandatory" }) }
         if (!password) { return res.status(400).send({ status: false, message: "password is mandatory" }) }
         if (!address) { return res.status(400).send({ status: false, message: "address is mandatory" }) }
-        if(typeof address !=="object"){
-            try{
+        if (typeof address !== "object") {
+            try {
                 address = JSON.parse(address)
                 data.address = address
-            }catch(err){ return res.status(400).send({ status: false, message: "Enter address in Object form" })}
+            } catch (err) { return res.status(400).send({ status: false, message: "Enter address in Object form" }) }
         }
         console.log(data.address)
         if (!address.shipping) { return res.status(400).send({ status: false, message: "shipping address is mandatory" }) }
@@ -38,7 +38,7 @@ const registerUser = async (req, res) => {
         if (!address.billing.street) { return res.status(400).send({ status: false, message: "street is mandatory in billing address" }) }
         if (!address.billing.city) { return res.status(400).send({ status: false, message: "city is mandatory in billing address" }) }
         if (!address.billing.pincode) { return res.status(400).send({ status: false, message: "pincode is mandatory in billing address" }) }
-        
+
         if (!isValidName(fname)) { return res.status(400).send({ status: false, message: "fname is not valid" }) }
         if (!isValidName(lname)) { return res.status(400).send({ status: false, message: "lname is not valid" }) }
         if (!isValidEmail(email)) { return res.status(400).send({ status: false, message: "email is not valid" }) }
@@ -51,24 +51,24 @@ const registerUser = async (req, res) => {
         if (!isValidString(address.billing.street)) { return res.status(400).send({ status: false, message: "street is not valid in billing address" }) }
         if (!isValidName(address.billing.city)) { return res.status(400).send({ status: false, message: "city is not valid in billing address" }) }
         if (!isValidPincode(address.billing.pincode)) { return res.status(400).send({ status: false, message: "pincode is not valid in billing address" }) }
-        
-        
+
+
         email = data.email = data.email.toLowerCase()
         const isEmailAlreadyUsed = await userModel.findOne({ email: email })
         if (isEmailAlreadyUsed) return res.status(400).send({ status: false, message: `This ${email} email is  already exists, please provide another email` })
-        
+
         const isPhoneAlreadyUsed = await userModel.findOne({ phone: phone })
         if (isPhoneAlreadyUsed) return res.status(400).send({ status: false, message: `This ${phone} mobile no is number already exists, please provide another mobile number` })
-        
+
         // ENCRYPTING PASSWORD
         let saltRounds = 10;
         let salt = await bcrypt.genSalt(saltRounds);
         let hash = await bcrypt.hash(password, salt);
         password = hash
-        
+
         //  Create : aws link for profile image
-        var uploadedFileURL = await aws.uploadFile(profileImage[0]) 
-        
+        var uploadedFileURL = await aws.uploadFile(profileImage[0])
+
         data.profileImage = uploadedFileURL;
         const createUser = await userModel.create(data)
         return res.status(201).send({ status: true, message: "User created successfully", data: createUser })
@@ -141,7 +141,7 @@ const getUserProfile = async function (req, res) {
         if (!findUser) {
             return res.status(404).send({ status: false, message: "User not found" })
         }
-        res.status(200).send({ status: true, message: "User profile details", "data": findUser })
+        res.status(200).send({ status: true, message: "User profile details", data: findUser })
     }
     catch (err) {
         res.status(500).send({ status: false, message: err.message })
@@ -149,84 +149,81 @@ const getUserProfile = async function (req, res) {
 }
 
 //<<<<<<<<------------------- Put-User-Api -------------------->>>>>>>>>>>>>
-    
-let updateUserProfile = async function(req,res) {
+
+let updateUserProfile = async function (req, res) {
     try {
         let userId = req.params.userId
         let body = req.body
         let profileImage = req.files
-        let {address,fname,lname,email,password,phone} = body
-        // console.log(profileImage[0]) && profileImage.length == 0
-        
-        if(Object.keys(body).length == 0) return res.send({status:false, message:"Provide some data inside the body to update"})
-        
-        if (!isValidObjectId(userId)) {  return res.status(400).send({ status: false, message: "userId is not valid" }) }
+        let { address, fname, lname, email, password, phone } = body
 
-        if(fname){
-        if (!isValidName(fname)) { return res.status(400).send({ status: false, message: "fname is not valid" }) }
+        if (Object.keys(body).length == 0 && (!profileImage || profileImage.length == 0)) return res.send({ status: false, message: "Provide some data inside the body to update" })
+
+        if (fname) {
+            if (!isValidName(fname)) { return res.status(400).send({ status: false, message: "fname is not valid" }) }
         }
-        if(lname){
-        if (!isValidName(lname)) { return res.status(400).send({ status: false, message: "lname is not valid" }) }
+        if (lname) {
+            if (!isValidName(lname)) { return res.status(400).send({ status: false, message: "lname is not valid" }) }
         }
-        if(email){
-        if (!isValidEmail(email)) { return res.status(400).send({ status: false, message: "email is not valid" }) }
+        if (email) {
+            if (!isValidEmail(email)) { return res.status(400).send({ status: false, message: "email is not valid" }) }
         }
-        if(profileImage.length > 0){
-        if (!isValidImage(profileImage[0].originalname)) { return res.status(400).send({ status: false, message: "Profile Image formate is not valid" }) }
+        if (profileImage.length > 1) { return res.status(400).send({ status: false, message: 'please select only one profile image' }) }
+        if (profileImage.length == 1) {
+            if (!isValidImage(profileImage[0].originalname)) { return res.status(400).send({ status: false, message: "Profile Image formate is not valid" }) }
         }
-        if(phone){
-        if (!isValidMobile(phone)) { return res.status(400).send({ status: false, message: "Mobile no is not valid" }) }
+        if (phone) {
+            if (!isValidMobile(phone)) { return res.status(400).send({ status: false, message: "Mobile no is not valid" }) }
         }
-        if(password){
-        if (!isValidPassword(password)) { return res.status(400).send({ status: false, message: "Choose a Strong Password,Use a mix of letters (uppercase and lowercase), numbers, and symbols in between 8-15 characters" }) }
-        let saltRounds = 10;
-        let salt = await bcrypt.genSalt(saltRounds);
-        let hash = await bcrypt.hash(password, salt);
-        password = hash
+        if (password) {
+            if (!isValidPassword(password)) { return res.status(400).send({ status: false, message: "Choose a Strong Password,Use a mix of letters (uppercase and lowercase), numbers, and symbols in between 8-15 characters" }) }
+            let saltRounds = 10;
+            let salt = await bcrypt.genSalt(saltRounds);
+            let hash = await bcrypt.hash(password, salt);
+            password = hash
         }
-    if(address){
-        address = JSON.parse(address)
-    if(address.shipping){
-        if(address.shipping.street){
-        if (!isValidString(address.shipping.street)) { return res.status(400).send({ status: false, message: "street is not valid in shipping address" }) }
+        if (address) {
+            address = JSON.parse(address)
+            if (address.shipping) {
+                if (address.shipping.street) {
+                    if (!isValidString(address.shipping.street)) { return res.status(400).send({ status: false, message: "street is not valid in shipping address" }) }
+                }
+                if (address.shipping.city) {
+                    if (!isValidName(address.shipping.city)) { return res.status(400).send({ status: false, message: "city is not valid in shipping address" }) }
+                }
+                if (address.shipping.pincode) {
+                    if (!isValidPincode(address.shipping.pincode)) { return res.status(400).send({ status: false, message: "pincode is not valid in shipping address" }) }
+                }
+            }
+            if (address.billing) {
+                if (address.billing.street) {
+                    if (!isValidString(address.billing.street)) { return res.status(400).send({ status: false, message: "street is not valid in billing address" }) }
+                }
+                if (address.billing.city) {
+                    if (!isValidName(address.billing.city)) { return res.status(400).send({ status: false, message: "city is not valid in billing address" }) }
+                }
+                if (address.billing.pincode) {
+                    if (!isValidPincode(address.billing.pincode)) { return res.status(400).send({ status: false, message: "pincode is not valid in billing address" }) }
+                }
+            }
+            body.address = address
         }
-        if(address.shipping.city ){
-        if (!isValidName(address.shipping.city)) { return res.status(400).send({ status: false, message: "city is not valid in shipping address" }) }
-        }
-        if(address.shipping.pincode){
-        if (!isValidPincode(address.shipping.pincode)) { return res.status(400).send({ status: false, message: "pincode is not valid in shipping address" }) }
-        }
-    }
-    if(address.billing){
-        if(address.billing.street){
-        if (!isValidString(address.billing.street)) { return res.status(400).send({ status: false, message: "street is not valid in billing address" }) }
-        }
-        if( address.billing.city ){
-        if (!isValidName(address.billing.city)) { return res.status(400).send({ status: false, message: "city is not valid in billing address" }) }
-        }
-        if(address.billing.pincode){
-        if (!isValidPincode(address.billing.pincode)) { return res.status(400).send({ status: false, message: "pincode is not valid in billing address" }) }
-        }
-    }
-        body.address = address
-    }
-        let findUserInDb = await userModel.findOne({_id:userId})
-        if(!findUserInDb) return res.status(404).send({status:false, message:"User not found"})
         const isPhoneAlreadyUsed = await userModel.findOne({ phone: phone })
         if (isPhoneAlreadyUsed) return res.status(400).send({ status: false, message: `This ${phone} mobile no is number already exists, please provide another mobile number` })
 
         const isEmailAlreadyUsed = await userModel.findOne({ email: email })
         if (isEmailAlreadyUsed) return res.status(400).send({ status: false, message: `This ${email} email is  already exists, please provide another email` })
-        
+
         //  Create : aws link for profile image
-        if (profileImage.length > 0) { var uploadedFileURL = await aws.uploadFile(profileImage[0])
+        if (profileImage.length > 0) {
+            var uploadedFileURL = await aws.uploadFile(profileImage[0])
             body.profileImage = uploadedFileURL;
         }
 
-        let updateUserData = await userModel.findOneAndUpdate({_id:userId},{$set:body},{new:true})
-        return res.status(200).send({status:true,message:"Data Updated Successfully",data:updateUserData})
+        let updateUserData = await userModel.findOneAndUpdate({ _id: userId }, { $set: body }, { new: true })
+        return res.status(200).send({ status: true, message: "Data Updated Successfully", data: updateUserData })
     } catch (err) {
-        return res.status(500).send({status:false,message:err.message})
+        return res.status(500).send({ status: false, message: err.message })
     }
 }
 

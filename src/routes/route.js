@@ -22,9 +22,15 @@ router.delete("/products/:productId", productController.deleteProduct)
 //<<<<<<<<------------------- Cart APIs ----------------------->>>>>>>>>>>>>
 
 router.post("/users/:userId/cart",auth.authenticate,auth.authorization, cartController.addToCart)
+router.put("/users/:userId/cart",auth.authenticate,auth.authorization,cartController.updateCart)
 router.get("/user/:userId/cart",auth.authenticate,auth.authorization, cartController.getCartSummary)
 router.delete("/user/:userId/cart",auth.authenticate,auth.authorization, cartController.deleteCart)
-router.put("/users/:userId/cart",cartController.updateCart)
+
+
+router.all("/*", async function (req, res) {
+    return res.status(400).send({ status: false, message: "Path is not valid" });
+      });
+  
 
 
 module.exports = router;
