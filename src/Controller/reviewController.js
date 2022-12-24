@@ -11,7 +11,7 @@ const Reviewcreate = async function (req, res) {
         const { rating, reviewedBy, review } = data
 
         if (!isValidObjectId(id)) { return res.status(400).send({ status: false, message: 'Plz provide a valid bookId' }) }
-        if (Object.keys(data) == 0) { return res.status(400).send({ status: false, message: 'Plz provied data' }) }
+        if (Object.keys(data).length == 0) { return res.status(400).send({ status: false, message: 'Plz provied data' }) }
 
         if (!rating) { return res.status(400).send({ status: false, message: "rating is mandatory" }) }
         if (reviewedBy) {
