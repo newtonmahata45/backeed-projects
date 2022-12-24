@@ -66,15 +66,6 @@ const isValidPassword = function (pwd) {
   }
 }
 
-//==============================// isValidDate //===============================
-const isValidDate = function (value) {
-  let dateFormatRegex = /^[0-9]{4}-(0[1-9]|1[0-2])-(0[1-9]|[1-2][0-9]|3[0-1])$/
-  if (dateFormatRegex.test(value)) {
-    return true
-  } else {
-    return false
-  }
-}
 //=============================// isValidImage //==============================
 
 const isValidImage = function (value) {
@@ -101,4 +92,4 @@ const isValidSize = function (value) {
 
 //=============================// module exports //==============================
 
-module.exports = {isNumber,isValidSize, isValidEmail, isValidObjectId, isValidString, isValidPassword, isValidName, isValidMobile, isValidPincode, isValidDate, isValidImage }
+module.exports = {isNumber,isValidSize, isValidEmail, isValidObjectId, isValidString, isValidPassword, isValidName, isValidMobile, isValidPincode, isValidImage }

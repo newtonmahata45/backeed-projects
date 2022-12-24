@@ -1,36 +1,35 @@
 // authentication
 const jwt = require("jsonwebtoken")
-
-const bookModel = require("../Models/bookModel")
-const userModel = require("../Models/userModel")
 const { isValidObjectId } = require("../validator/validator")
+const userModel = require("../model/userModel")
 
 //================================================Authentication======================================================//
 
 const authenticate = function (req, res, next) {
     try {
-        const token = req.headers["x-api-key"]  // token from headers
-
-        if (!token) {
+        const Bearer = req.headers["authorization"]  // token from headers
+        if (!Bearer) {
             return res.status(400).send({ status: false, message: "token must be present in headers" })
         }
         else {
-            jwt.verify(token, "the-secret-key", function (err, decodedToken) {
+            const token = Bearer.split(" ")
+            if (token[0] !== "Bearer"  ) {
+                return res.status(400).send({ status: false, message: "Select Bearer Token in headers" })
+            }
+            jwt.verify(token[1], "the-secret-key", function (err, decodedToken) {
 
                 if (err) {
-                    if(err.message=="invalid token"){
-                        return res.status(401).send({ status: false, message: "Token in not valid" })}
-
-                    if(err.message=="jwt expired"){
+                    if (err.message == ("invalid token" || "invalid signature")) {
+                        return res.status(401).send({ status: false, message: "Token in not valid" })
+                    }
+                    if (err.message == "jwt expired") {
                         return res.status(401).send({ status: false, message: "Token has been expired" })
                     }
                     return res.status(401).send({ status: false, message: err.message })
-
                 }
-                else{
-                    req.loginUserId = decodedToken.id       // golbelly  in  decodedToken.id 
+                else {
+                    req.loginUserId = decodedToken.userId       // golbelly  in  decodedToken.id 
                     next()
-
                 }
             })
         }
@@ -40,10 +39,25 @@ const authenticate = function (req, res, next) {
     }
 }
 
+//===============================================Authorization====================================================//
 
 
-//===============================================authorisation====================================================//
+const authorization = async function (req, res, next) {
+    try {
+        const userId = req.params.userId
+        if (!isValidObjectId(userId)) { return res.status(400).send({ status: false, message: 'Please provide a valid UserId' }) }
+        let user = await userModel.findById(userId)
+        if (!user) { return res.status(404).send({ status: false, message: 'User does not exists' }) }
+
+        let tokenUserId = req.loginUserId // token Id
+        if (tokenUserId != userId) { return res.status(403).send({ status: false, message: "You are not authorised to perform this task" }) }
+        next();
+    }
+    catch (error) {
+        return res.status(500).send({ status: false, message: error.message })
+    }
+}
 
 
 
-module.exports.authenticate = authenticate
+module.exports = { authenticate, authorization }
