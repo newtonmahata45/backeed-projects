@@ -1,6 +1,8 @@
 const productModel = require("../model/productModel")
 const aws = require("../aws")
+
 const { isValidObjectId } = require("../validator/validator")
+
 //=========================================================// CREATE PRODUCT //=============================================================//
 let createProduct = async (req, res) => {
     try {

@@ -119,7 +119,7 @@ const updateCart = async function (req, res) {
         return res.status(500).send({ status: false, message: err.message })
     }
 }
-//<<<<<<<<------------------- get-Cart-Api -------------------->>>>>>>>>>>>>
+//<<<<<<<<------------------- get-Cart-Api -------------------->>>>>>>>>>>>>>
 const getCartSummary = async function (req, res) {
     try {
         let userId = req.params.userId
@@ -128,13 +128,11 @@ const getCartSummary = async function (req, res) {
         const getCart = await cartModel.findOne({ userId: userId }).populate({ path: "items.productId", model: "product" }).select("-items._id")
         if (!getCart) { return res.status(404).send({ status: false, message: "Your cart is not found" }) }
         if (getCart.items.length == 0) { return res.status(200).send({ status: true, message: "Your Shopping cart is empty", data: getCart }) }
-        return res.send({ status: true, message: "Here is your cart", data: getCart })
+        return res.send({ status: true, message: "Here is your cart", data: getCart });
     }
     catch (err) {
-        return res.status(500).send({ status: false, message: err.message })
+        return res.status(500).send({ status: false, message: err.message });
     }
-
-
 }
 //<<<<<<<<------------------- delete-Cart-Api -------------------->>>>>>>>>>>>>
 const deleteCart = async function (req, res) {

@@ -154,10 +154,11 @@ let updateUserProfile = async function (req, res) {
     try {
         let userId = req.params.userId
         let body = req.body
+        console.log(body)
         let profileImage = req.files
         let { address, fname, lname, email, password, phone } = body
 
-        if (Object.keys(body).length == 0 && (!profileImage || profileImage.length == 0)) return res.send({ status: false, message: "Provide some data inside the body to update" })
+        if (Object.keys(body).length == 0 && (!profileImage || profileImage.length == 0)) return res.status(400).send({ status: false, message: "Provide some data inside the body to update" })
 
         if (fname) {
             if (!isValidName(fname)) { return res.status(400).send({ status: false, message: "fname is not valid" }) }
