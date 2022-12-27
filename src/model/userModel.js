@@ -17,7 +17,8 @@ const userSchema = new mongoose.Schema({
             city: { type: String, required: true },
             pincode: { type: Number, required: true },
         },
-    }
+    },
+    __v:false
 }, { timestamps: true } )
 
 

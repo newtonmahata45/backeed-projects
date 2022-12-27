@@ -3,6 +3,7 @@ const userController = require("../controller/userController");
 const productController = require("../controller/productController");
 const cartController = require("../controller/cartController");
 const auth = require("../middleware/auth")
+const { createOrder,updateOrder } = require("../controller/orderController");
 
 //<<<<<<<<-------------------  User APIs -------------------->>>>>>>>>>>>>
 
@@ -25,6 +26,11 @@ router.post("/users/:userId/cart",auth.authenticate,auth.authorization, cartCont
 router.put("/users/:userId/cart",auth.authenticate,auth.authorization,cartController.updateCart)
 router.get("/user/:userId/cart",auth.authenticate,auth.authorization, cartController.getCartSummary)
 router.delete("/user/:userId/cart",auth.authenticate,auth.authorization, cartController.deleteCart)
+
+//<<<<<<<<------------------- Order APIs ----------------------->>>>>>>>>>>>>
+
+router.post("/users/:userId/orders",createOrder)
+router.put("/users/:userId/orders",updateOrder)
 
 
 router.all("/*", async function (req, res) {

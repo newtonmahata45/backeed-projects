@@ -24,10 +24,11 @@ const registerUser = async (req, res) => {
         if (!password) { return res.status(400).send({ status: false, message: "password is mandatory" }) }
         if (!address) { return res.status(400).send({ status: false, message: "address is mandatory" }) }
         if (typeof address !== "object") {
-            try {
+    
+            // if(JSON.parse(address))
+            // { return res.status(400).send({ status: false, message: "Enter address in Object form" }) }
                 address = JSON.parse(address)
                 data.address = address
-            } catch (err) { return res.status(400).send({ status: false, message: "Enter address in Object form" }) }
         }
         console.log(data.address)
         if (!address.shipping) { return res.status(400).send({ status: false, message: "shipping address is mandatory" }) }
@@ -117,7 +118,7 @@ let userLogin = async function (req, res) {
         }, "the-secret-key", { expiresIn: '10d' })
         res.setHeader("Authorization", token)
 
-        return res.status(200).send({ status: true, message: "Success", data: token })
+        return res.status(200).send({ status: true, message: "User login successfull", data:{userId:userDetail._id,token:token} })
     } catch (err) {
         res.status(500).send({ status: false, message: err.message })
     }
@@ -184,6 +185,7 @@ let updateUserProfile = async function (req, res) {
             password = hash
         }
         if (address) {
+            
             address = JSON.parse(address)
             if (address.shipping) {
                 if (address.shipping.street) {
@@ -222,7 +224,7 @@ let updateUserProfile = async function (req, res) {
         }
 
         let updateUserData = await userModel.findOneAndUpdate({ _id: userId }, { $set: body }, { new: true })
-        return res.status(200).send({ status: true, message: "Data Updated Successfully", data: updateUserData })
+        return res.status(200).send({ status: true, message: "User profile updated", data: updateUserData })
     } catch (err) {
         return res.status(500).send({ status: false, message: err.message })
     }

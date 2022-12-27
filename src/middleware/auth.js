@@ -28,7 +28,7 @@ const authenticate = function (req, res, next) {
                     return res.status(401).send({ status: false, message: err.message })
                 }
                 else {
-                    req.loginUserId = decodedToken.userId       // golbelly  in  decodedToken.id 
+                    req.loginUserId = decodedToken.userId       // golbelly  in  decodedToken.userId 
                     next()
                 }
             })

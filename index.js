@@ -1,7 +1,7 @@
 const express = require("express")
 const mongoose = require("mongoose")
 const route = require("./src/routes/route")
-const multer= require("multer");
+const multer = require("multer");
 const { AppConfig } = require('aws-sdk');
 
 const app = express()
@@ -17,6 +17,10 @@ mongoose.connect("mongodb+srv://group22:1234@group22databse.uvtoalh.mongodb.net/
     .catch((err) => console.log(err))
 
 app.use("/", route)
+
+app.use((req, res) => {
+    return res.status(400).send({ status: false, message: "End point is incorrect" })
+});
 
 
 const PORT = 3000
