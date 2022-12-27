@@ -2,8 +2,8 @@ const router = require("express").Router();
 const userController = require("../controller/userController");
 const productController = require("../controller/productController");
 const cartController = require("../controller/cartController");
+const {updateOrder,createOrder} = require("../controller/orderController");
 const auth = require("../middleware/auth")
-const { createOrder,updateOrder } = require("../controller/orderController");
 
 //<<<<<<<<-------------------  User APIs -------------------->>>>>>>>>>>>>
 
@@ -29,8 +29,9 @@ router.delete("/user/:userId/cart",auth.authenticate,auth.authorization, cartCon
 
 //<<<<<<<<------------------- Order APIs ----------------------->>>>>>>>>>>>>
 
-router.post("/users/:userId/orders",createOrder)
-router.put("/users/:userId/orders",updateOrder)
+router.post("/users/:userId/orders",auth.authenticate,auth.authorization, createOrder)
+router.put("/users/:userId/orders",auth.authenticate,auth.authorization,updateOrder)
+
 
 
 router.all("/*", async function (req, res) {

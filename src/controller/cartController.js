@@ -14,10 +14,10 @@ const addToCart = async function (req, res) {
 
         if (Object.keys(data).length == 0) { return res.status(400).send({ status: false, message: "Put the productId you want to add to Cart" }) }
         if (!isValidObjectId(productId)) { return res.status(400).send({ status: false, message: "product id not valid id" }) }
-        if (!isNumber(quantity)) { quantity = 1 };
-        const productDetails = await productModel.findOne({ _id: productId, isDeleted: false });
-        if (!productDetails) return res.status(404).send({ status: false, message: "No product Found" });
-
+        if (!isNumber(quantity)) { quantity = 1 }
+        const productDetails = await productModel.findOne({ _id: productId, isDeleted: false })
+        if (!productDetails) return res.status(404).send({ status: false, message: "No product Found" })
+        let newCart = false
         if (!cartId) {
             let theCarts = await cartModel.findOne({ userId: userId });
             if (theCarts) { return res.status(409).send({ status: false, message: `Cart is Already exists, put ${theCarts._id} this cartId in the body` }) };
@@ -26,8 +26,9 @@ const addToCart = async function (req, res) {
                 items: [],
                 totalPrice: 0,
                 totalItems: 0
-            };
-            var cartDetails = await cartModel.create(cartCreate);
+            }
+            var cartDetails = await cartModel.create(cartCreate)
+              newCart = true
         }
         else {
             if (!isValidObjectId(cartId)) { return res.status(400).send({ status: false, message: "cart id not valid id" }) };
@@ -47,9 +48,14 @@ const addToCart = async function (req, res) {
 
         cartDetails.totalPrice = cartDetails.totalPrice + (productDetails.price * quantity)
         cartDetails.totalItems = cartDetails.items.length
-
+        
         let cartData = await cartModel.findOneAndUpdate({ userId: userId }, { ...cartDetails }, { new: true }).select({ __v: 0 })
-        return res.status(200).send({ status: true, message: "Item added to Cart", data: cartData })
+        if(newCart) {
+            return res.status(201).send({ status: true, message: "Success", data: cartData })
+        } else {
+            return res.status(200).send({ status: true, message: "Success", data: cartData })
+
+        }
 
     } catch (err) {
         return res.status(500).send({ status: false, message: err.message })
@@ -72,7 +78,7 @@ const updateCart = async function (req, res) {
 
         const theCart = await cartModel.findById(cartId)
         if (!theCart) return res.status(404).send({ status: false, message: "Cart does not found" })
-        const product = await productModel.findOne({ _id: productId , isdeleted: false })
+        const product = await productModel.findOne({ _id: productId },{isdeleted: false })
         if (!product) return res.status(404).send({ status: false, message: "Product does not found" })
 
         const theLength = theCart.items.length
