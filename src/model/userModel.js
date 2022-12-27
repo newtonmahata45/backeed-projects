@@ -18,8 +18,8 @@ const userSchema = new mongoose.Schema({
             pincode: { type: Number, required: true },
         },
     },
-    __v:false
-}, { timestamps: true } )
+    __v: false
+}, { timestamps: true })
 
 
 module.exports = mongoose.model("User", userSchema)

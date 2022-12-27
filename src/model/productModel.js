@@ -1,11 +1,11 @@
 const mongoose = require("mongoose")
 const productSchema = new mongoose.Schema({
 
-    title: { type: String, required: true, unique: true,trim:true },
+    title: { type: String, required: true, unique: true, trim: true },
     description: { type: String, required: true },
     price: { type: Number, required: true },
-    currencyId: { type: String, required: true,default:"INR" },
-    currencyFormat: { type: String, required: true,default:"₹"},
+    currencyId: { type: String, required: true, default: "INR" },
+    currencyFormat: { type: String, required: true, default: "₹" },
     isFreeShipping: { type: Boolean, default: false },
     productImage: { type: String, required: true },  // s3 link
     style: { type: String },
