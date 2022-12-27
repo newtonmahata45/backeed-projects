@@ -8,62 +8,56 @@ let createProduct = async (req, res) => {
     try {
         var data = req.body
         const productImage = req.files
-        
+
         //  CHECK : if request body is empty
         if (!Object.keys(data).length > 0) return res.status(400).send({ status: false, error: "Please enter data" })
-        
+
         const { title, description, currencyId, currencyFormat, isFreeShipping, style } = data
-        let installments= (+data.installments)
-        let availableSizes = data.availableSizes
-        
+
         if (!title) { return res.status(400).send({ status: false, message: "title is mandatory" }) }
         if (!description) { return res.status(400).send({ status: false, message: "description is mandatory" }) }
         if (!data.price) { return res.status(400).send({ status: false, message: "price is mandatory" }) }
-        
-        let price= (+data.price)
-        console.log(+data.price)
+        if (!data.availableSizes) return res.status(400).send({ status: false, message: 'please provide Sizes' })
+        if (!style) { return res.status(400).send({ status: false, message: 'style is mandatory' }) }
+        if (productImage.length === 0) { return res.status(400).send({ status: false, message: "productImage is mandatory" }) }
+        if (productImage.length > 1) { return res.status(400).send({ status: false, message: 'please select only one product image' }) }
+        let price = (+data.price)
+        let installments = (+data.installments)
+        data.price = price
+        data.installments = installments
         if (!isValidString(title)) return res.status(400).send({ status: false, message: 'please provide title' })
         if (!isValidString(description)) return res.status(400).send({ status: false, message: 'please provide description' })
-        if (+data.price == NaN) {return res.status(400).send({ status: false, message: 'please provide price in digits' })}
+        if (!isValidImage(productImage[0].originalname)) { return res.status(400).send({ status: false, message: "Image formate of product is not valid" }) }
+
+        if (!price) { return res.status(400).send({ status: false, message: 'please provide price in digits' }) }
+        if (!installments) return res.status(400).send({ status: false, message: 'please provide installments in digits' })
         if (isFreeShipping) {
             if (!(isFreeShipping == "true" || isFreeShipping == "false")) return res.status(400).send({ status: false, message: 'please provide valid isFreeShipping(true / false)' })
         }
-        if (!style) { return res.status(400).send({ status: false, message: 'please provide style' }) }
-
-        if (!isNumber(+installments)) return res.status(400).send({ status: false, message: 'please provide installments in digits' })
-
+        if (isFreeShipping === "true") { data.isFreeShipping = true }
+        if (isFreeShipping === "false") { data.isFreeShipping = false }
         if (currencyId) {
-            if (currencyId != "INR") return res.status(400).send({ status: false, message: 'please provide valid currencyId' })
+            if (currencyId != "INR") return res.status(400).send({ status: false, message: 'currencyId only be `INR`' })
         }
-        else { data.currencyId = "INR" }
         if (currencyFormat) {
-            if (currencyFormat != "₹") return res.status(400).send({ status: false, message: 'please provide valid currencyFormat' })
-        } else data.currencyFormat = "₹"
-
-        if (!availableSizes) return res.status(400).send({ status: false, message: 'please provide Sizes' })
-        if (availableSizes) {
-            //covert availableSizes into upper case and split then with comma 
-            availableSizes = availableSizes.toUpperCase().split(",")
-            //availableSizes must be in enum (["S", "XS", "M", "X", "L", "XXL", "XL"])
-            console.log(availableSizes)
-            for (let i = 0; i < availableSizes.length; i++) {
-              //in enum or not checking for availableSizes
-              if (!(["S", "XS", "M", "X", "L", "XXL", "XL"]).includes(availableSizes[i])) {
+            if (currencyFormat != "₹") return res.status(400).send({ status: false, message: 'currencyFormat only be `₹`' })
+        }
+        let availableSizes = data.availableSizes
+        availableSizes = availableSizes.toUpperCase().split(",")
+        for (let i = 0; i < availableSizes.length; i++) {
+            if (!["S", "XS", "M", "X", "L", "XXL", "XL",].includes(availableSizes[i])) {
                 return res.status(400).send({ status: false, message: `Sizes should be ${["S", "XS", "M", "X", "L", "XXL", "XL"]}` })
-              }
             }
-          }
-
-          return 
-        const isTitleAlreadyUsed = await productModel.findOne({ title: title })
-        if (isTitleAlreadyUsed) return res.status(400).send({ status: false, message: "This  is title already exists, please provide another title" })
+        }
+        data.availableSizes = availableSizes
+        const productDetails = await productModel.findOne({ title: title })
+        if (productDetails) return res.status(409).send({ status: false, message: "This title is already exists, please provide another title" })
 
         // Create : aws link for profile image
-        if (productImage.length > 0) { var uploadedFileURL = await aws.uploadFile(productImage[0]) }
-        else { return res.status(400).send({ status: false, message: 'please provide product image' }) }
-
+        let uploadedFileURL = await aws.uploadFile(productImage[0])
         data.productImage = uploadedFileURL
 
+        // return res.status(456).send({ status: false, message: "boom" })
         const createdUser = await productModel.create(data)
         return res.status(201).send({ status: true, message: "User created successfully", data: createdUser })
     }

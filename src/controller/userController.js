@@ -23,13 +23,8 @@ const registerUser = async (req, res) => {
         if (!phone) { return res.status(400).send({ status: false, message: "phone is mandatory" }) }
         if (!password) { return res.status(400).send({ status: false, message: "password is mandatory" }) }
         if (!address) { return res.status(400).send({ status: false, message: "address is mandatory" }) }
-        if (typeof address !== "object") {
-    
-            // if(JSON.parse(address))
-            // { return res.status(400).send({ status: false, message: "Enter address in Object form" }) }
-                address = JSON.parse(address)
-                data.address = address
-        }
+        address = JSON.parse(address)
+        data.address = address
         console.log(data.address)
         if (!address.shipping) { return res.status(400).send({ status: false, message: "shipping address is mandatory" }) }
         if (!address.shipping.street) { return res.status(400).send({ status: false, message: "street is mandatory in shipping address" }) }
@@ -185,7 +180,6 @@ let updateUserProfile = async function (req, res) {
             password = hash
         }
         if (address) {
-            
             address = JSON.parse(address)
             if (address.shipping) {
                 if (address.shipping.street) {
