@@ -13,13 +13,13 @@ const authenticate = function (req, res, next) {
         }
         else {
             const token = Bearer.split(" ")
-            if (token[0] !== "Bearer"  ) {
+            if (token[0] !== "Bearer") {
                 return res.status(400).send({ status: false, message: "Select Bearer Token in headers" })
             }
             jwt.verify(token[1], "the-secret-key", function (err, decodedToken) {
 
                 if (err) {
-                    if (err.message == "invalid token" || err.message== "invalid signature") {
+                    if (err.message == "invalid token" || err.message == "invalid signature") {
                         return res.status(401).send({ status: false, message: "Token in not valid" })
                     }
                     if (err.message == "jwt expired") {
@@ -48,7 +48,7 @@ const authorization = async function (req, res, next) {
         if (!isValidObjectId(userId)) { return res.status(400).send({ status: false, message: 'Please provide a valid UserId' }) }
         let user = await userModel.findById(userId)
         if (!user) { return res.status(404).send({ status: false, message: 'User does not exists' }) }
-        req.userData = user 
+        req.userData = user
         let tokenUserId = req.loginUserId // token Id
         if (tokenUserId != userId) { return res.status(403).send({ status: false, message: "You are not authorised to perform this task" }) }
         next();

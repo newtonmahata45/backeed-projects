@@ -12,8 +12,8 @@ const isValidEmail = function (value) {
 
 const isValidObjectId = function (objectId) {
   var valid = mongoose.Types.ObjectId.isValid(objectId)
-  if(!valid){ return false }
-  else{return true}
+  if (!valid) { return false }
+  else { return true }
 }
 
 //==========================// isValidString //==================================
@@ -28,8 +28,8 @@ const isValidString = function (value) {
 //==============================// isValidName //================================
 
 const isValidName = function (name) {
-  
-  if(name.trim().length === 0){return false}
+
+  if (name.trim().length === 0) { return false }
   if (/^[a-zA-Z ,.'-]+$/.test(name)) {
     return true;
   }
@@ -69,14 +69,14 @@ const isValidPassword = function (pwd) {
 //=============================// isValidImage //==============================
 
 const isValidImage = function (value) {
-  let imageRegex =/\.(gif|jpe?g|tiff?|png|webp|bmp)$/i
+  let imageRegex = /\.(gif|jpe?g|tiff?|png|webp|bmp)$/i
 
   if (imageRegex.test(value)) {
     return true
   }
 }
 
-const isNumber= function (value) {
+const isNumber = function (value) {
   if (typeof (value) === 'undefined' || typeof (value) === 'null') return false
   if (typeof (value) === 'number') return true
 
@@ -85,11 +85,11 @@ const isNumber= function (value) {
 const isValidSize = function (value) {
   let enumValue = ["S", "XS", "M", "X", "L", "XXL", "XL"]
   for (let x of value) {
-      if (enumValue.includes(x) == false)  return false
+    if (enumValue.includes(x) == false) return false
   }
   return true;
 }
 
 //=============================// module exports //==============================
 
-module.exports = {isNumber,isValidSize, isValidEmail, isValidObjectId, isValidString, isValidPassword, isValidName, isValidMobile, isValidPincode, isValidImage }
+module.exports = { isNumber, isValidSize, isValidEmail, isValidObjectId, isValidString, isValidPassword, isValidName, isValidMobile, isValidPincode, isValidImage }
