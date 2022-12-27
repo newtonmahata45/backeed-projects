@@ -30,7 +30,7 @@ router.delete("/user/:userId/cart",auth.authenticate,auth.authorization, cartCon
 //<<<<<<<<------------------- Order APIs ----------------------->>>>>>>>>>>>>
 
 router.post("/users/:userId/orders",auth.authenticate,auth.authorization, createOrder)
-router.put("/users/:userId/orders",updateOrder)
+router.put("/users/:userId/orders",auth.authenticate,auth.authorization,updateOrder)
 
 
 
