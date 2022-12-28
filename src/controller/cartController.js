@@ -3,7 +3,7 @@ const productModel = require("../model/productModel");
 const { isValidObjectId, isNumber } = require("../validator/validator");
 
 
-// <<<<<<<<------------------- Creat-Cart-Api ------------------ >>>>>>>>>>>>>
+// <<<<<<<<------------------- Create-Cart-Api ------------------ >>>>>>>>>>>>>
 
 const addToCart = async function (req, res) {
     try {
@@ -127,7 +127,7 @@ const updateCart = async function (req, res) {
     }
 }
 
-// <<<<<<<<------------------- get-Cart-Api -------------------- >>>>>>>>>>>>>>
+// <<<<<<<<------------------- get-Cart-Api -------------------- >>>>>>>>>>>>>>>
 
 const getCartSummary = async function (req, res) {
     try {
