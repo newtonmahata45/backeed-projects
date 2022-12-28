@@ -24,9 +24,9 @@ const registerUser = async (req, res) => {
         if (!password) { return res.status(400).send({ status: false, message: "password is mandatory" }) }
         if (!address) { return res.status(400).send({ status: false, message: "address is mandatory" }) }
 
-                address = JSON.parse(address)
-                data.address = address
-        
+        address = JSON.parse(address)
+        data.address = address
+
         if (!address.shipping) { return res.status(400).send({ status: false, message: "shipping address is mandatory" }) }
         if (!address.shipping.street) { return res.status(400).send({ status: false, message: "street is mandatory in shipping address" }) }
         if (!address.shipping.city) { return res.status(400).send({ status: false, message: "city is mandatory in shipping address" }) }
@@ -112,7 +112,7 @@ let userLogin = async function (req, res) {
         }, "the-secret-key", { expiresIn: '10d' })
         res.setHeader("Authorization", token)
 
-        return res.status(200).send({ status: true, message: "User login successfull", userId:userDetail._id,data: token })
+        return res.status(200).send({ status: true, message: "User login successfull", data: { userId: userDetail._id, token: token } })
     } catch (err) {
         res.status(500).send({ status: false, message: err.message })
     }
@@ -149,9 +149,9 @@ let updateUserProfile = async function (req, res) {
         let body = req.body
         let profileImage = req.files
         let { address, fname, lname, email, password, phone } = body
-        
+
         let updateData = req.userData
-        
+
         if (Object.keys(body).length == 0 && (!profileImage || profileImage.length == 0)) return res.status(400).send({ status: false, message: "Provide some data inside the body to update" })
 
 
@@ -171,13 +171,15 @@ let updateUserProfile = async function (req, res) {
         }
         if (profileImage.length > 1) { return res.status(400).send({ status: false, message: 'please select only one profile image' }) }
         if (profileImage.length == 1) {
-            if (!isValidImage(profileImage[0].originalname)) { return res.status(400).send({ status: false, message: "Profile Image formate is not valid" }) 
-        }
+            if (!isValidImage(profileImage[0].originalname)) {
+                return res.status(400).send({ status: false, message: "Profile Image formate is not valid" })
+            }
         }
         if (phone) {
-            if (!isValidMobile(phone)) { return res.status(400).send({ status: false, message: "Mobile no is not valid" })
-         }
-         updateData.phone = phone
+            if (!isValidMobile(phone)) {
+                return res.status(400).send({ status: false, message: "Mobile no is not valid" })
+            }
+            updateData.phone = phone
         }
         if (password) {
             if (!isValidPassword(password)) { return res.status(400).send({ status: false, message: "Choose a Strong Password,Use a mix of letters (uppercase and lowercase), numbers, and symbols in between 8-15 characters" }) }
@@ -186,25 +188,25 @@ let updateUserProfile = async function (req, res) {
             let hash = await bcrypt.hash(password, salt);
             updateData.password = hash
         }
-       
+
         if (address) {
             address = JSON.parse(address)
-            if (address.shipping)  {
+            if (address.shipping) {
                 if (address.shipping.street) {
                     if (!isValidString(address.shipping.street)) { return res.status(400).send({ status: false, message: "street is not valid in shipping address" }) }
                     updateData.address.shipping.street = address.billing.street
-                    
+
                 }
                 if (address.shipping.city) {
                     if (!isValidName(address.shipping.city)) { return res.status(400).send({ status: false, message: "city is not valid in shipping address" }) }
                     updateData.address.shipping.city = address.shipping.city
 
-        
+
                 }
                 if (address.shipping.pincode) {
                     if (!isValidPincode(address.shipping.pincode)) { return res.status(400).send({ status: false, message: "pincode is not valid in shipping address" }) }
                     updateData.address.shipping.pincode = address.shipping.pincode
-                    
+
                 }
             }
             if (address.billing) {
@@ -226,15 +228,15 @@ let updateUserProfile = async function (req, res) {
             // updateData.address = address
         }
 
-       //  Create : aws link for profile image
-       if (profileImage.length > 0) {
-        var uploadedFileURL = await aws.uploadFile(profileImage[0])
-       updateData.profileImage = uploadedFileURL;
-    }
+        //  Create : aws link for profile image
+        if (profileImage.length > 0) {
+            var uploadedFileURL = await aws.uploadFile(profileImage[0])
+            updateData.profileImage = uploadedFileURL;
+        }
 
-        if (Object.keys(updateData).length == 0 ) return res.status(400).send({ status: false, message: "Provide some data inside the body to update" })
-        
-        
+        if (Object.keys(updateData).length == 0) return res.status(400).send({ status: false, message: "Provide some data inside the body to update" })
+
+
         const isPhoneAlreadyUsed = await userModel.findOne({ phone: phone })
         if (isPhoneAlreadyUsed) return res.status(400).send({ status: false, message: `This ${phone} mobile no is number already exists, please provide another mobile number` })
 
@@ -242,7 +244,7 @@ let updateUserProfile = async function (req, res) {
         if (isEmailAlreadyUsed) return res.status(400).send({ status: false, message: `This ${email} email is  already exists, please provide another email` })
 
 
-        let updateUserData = await userModel.findOneAndUpdate({ _id: userId }, { $set: updateData }, { new: true })
+        let updateUserData = await userModel.findOneAndUpdate({ _id: userId }, { $set: { ...updateData } }, { new: true })
         return res.status(200).send({ status: true, message: "User profile updated", data: updateUserData })
     } catch (err) {
         return res.status(500).send({ status: false, message: err.message })
