@@ -1,6 +1,6 @@
 const productModel = require("../model/productModel")
 const aws = require("../aws")
-const { isValidObjectId, isValidPassword, isValidName, isValidString, isValidImage, isValidEmail, isValidPincode, isValidMobile, isValidSize, isNumber } = require("../validator/validator")
+const { isValidObjectId,  isValidString, isValidImage, isValidSize, } = require("../validator/validator")
 
 //=========================================================// CREATE PRODUCT //=============================================================//
 let createProduct = async (req, res) => {
@@ -44,9 +44,9 @@ let createProduct = async (req, res) => {
         }
         else { data.currencyFormat = "₹" }
 
-        let availableSizes = data.availableSizes
-        availableSizes = availableSizes.toUpperCase().split(",")
+        let availableSizes = data.availableSizes.toUpperCase().split(",")
         for (let i = 0; i < availableSizes.length; i++) {
+            availableSizes[i] = availableSizes[i].trim()
             if (!["S", "XS", "M", "X", "L", "XXL", "XL",].includes(availableSizes[i])) {
                 return res.status(400).send({ status: false, message: `Sizes should be ${["S", "XS", "M", "X", "L", "XXL", "XL"]}` })
             }
@@ -59,9 +59,8 @@ let createProduct = async (req, res) => {
         let uploadedFileURL = await aws.uploadFile(productImage[0])
         data.productImage = uploadedFileURL
 
-        // return res.status(456).send({ status: false, message: "boom" })
-        const createdUser = await productModel.create(data)
-        return res.status(201).send({ status: true, message: "Success", data: createdUser })
+        const createdproduct = await productModel.create(data)
+        return res.status(201).send({ status: true, message: "Success", data: createdproduct })
     }
     catch (err) {
         console.log(err)
@@ -69,8 +68,7 @@ let createProduct = async (req, res) => {
     }
 }
 
-
-//==========================================================// GET PRODUCT //============================================================================//
+//==========================================================// GET PRODUCTS //============================================================================//
 let getproducts = async function (req, res) {
     try {
         const filters = req.query
@@ -108,39 +106,7 @@ let getproducts = async function (req, res) {
                 if (allProducts.length == 0) return res.status(404).send({ status: false, message: "Product not Found" })
                 return res.status(200).send({ status: true, message: "Success", data: allProducts })
             }
-            if (priceLessThan) {
-                finalFilters.price = { $lte: priceLessThan }
-            }
-            if (priceGreaterThan) {
-                finalFilters.price = { $gte: priceGreaterThan }
-            }
-            if (priceLessThan && priceGreaterThan) {
-                finalFilters.price = { $lte: priceLessThan, $gte: priceGreaterThan }
-            }
-            if (priceSort) {
-                if (!(priceSort == "1" || priceSort == "-1")) return res.status(400).send({
-                    status: false, message: "value priceSort can either be 1 or -1"
-                })
 
-                if (priceSort == "1") {
-                    const allProducts = await productModel.find(finalFilters).sort({ price: 1 })
-                    if (allProducts.length == 0) return res.status(404).send({ status: false, message: "No Product Found" })
-                    return res.status(200).send({ status: true, message: "Product List", data: allProducts })
-                }
-                else if (priceSort == "-1") {
-                    const allProducts = await productModel.find(finalFilters).sort({ price: -1 })
-                    if (allProducts.length == 0) return res.status(404).send({ status: false, message: "Product not Found" })
-                    return res.status(200).send({ status: true, message: "Product List", data: allProducts })
-                }
-            }
-
-            const allProducts = await productModel.find(finalFilters).select({
-                title: 1, description: 1, price: 1, currencyFormat: 1, currencyId: 1, isFreeShipping: 1, productImage: 1, style: 1, availableSizes: 1, installments: 1, _id: 0
-            }).sort({ price: 1 })
-
-            if (allProducts.length == 0) return res.status(404).send({ status: false, message: "Product not Found" })
-
-            return res.status(200).send({ status: true, message: "Product List", data: allProducts })
         }
 
         const allProducts = await productModel.find(finalFilters).select({ _id: 0, __v: 0 }).sort({ price: 1 })
@@ -156,7 +122,7 @@ let getproducts = async function (req, res) {
     }
 }
 
-//=========================================================// GET PRODUCTS BY ID //========================================================//
+//=========================================================// GET PRODUCT BY ID //========================================================//
 let getProductsById = async (req, res) => {
     try {
         let productId = req.params.productId
@@ -181,18 +147,12 @@ let updateProductById = async (req, res) => {
         const updateData = {}
 
         if (!isValidObjectId(productId)) return res.status(400).send({ status: false, message: "Please enter valid productId" })
-
+        
         //  CHECK : if there is no data for updatation
         if (!(dataForUpdates && productImage)) return res.status(400).send({ status: false, message: 'please provide some data for upadte profile' })
 
-        //  Searching : user details 
-        const productDetails = await productModel.findOne({ _id: productId, isDeleted: false })
-        if (!productDetails) return res.status(404).send({ status: false, message: "Product not Found" })
+        let { title, description, isFreeShipping, style } = dataForUpdates
 
-        let { title, description, isFreeShipping, style, availableSizes, installments, price } = dataForUpdates
-
-
-        //  CHECK : If any data field is Empty
         if (title) {
             if (!isValidString(title)) return res.status(400).send({ status: false, message: 'please provide title in String' })
             const isTitleAlreadyUsed = await productModel.findOne({ title })
@@ -214,37 +174,38 @@ let updateProductById = async (req, res) => {
             updateData.style = style
         }
 
-        if (installments) {
-            installments = JSON.parse(installments)
-            if (!isNumber(installments)) return res.status(400).send({ status: false, message: 'please provide installments in digits' })
+        if (dataForUpdates.installments) {
+            let installments = (+dataForUpdates.installments)
+            if (!installments) return res.status(400).send({ status: false, message: 'please provide installments in digits' })
             updateData.installments = installments
         }
 
         if (dataForUpdates.price) {
-            dataForUpdates.price = JSON.parse(price)
-        
-            if (!isNumber(dataForUpdates.price)) return res.status(400).send({ status: false, message: 'please provide price in digits' })
+            let price = (+dataForUpdates.price)
+            if (!price) return res.status(400).send({ status: false, message: 'please provide price in digits' })
             updateData.price = price
         }
         if (productImage.length > 0) {
+            if (productImage.length > 1) { return res.status(400).send({ status: false, message: 'please select only one product image' }) }
+            if (!isValidImage(productImage[0].originalname)) {
+                return res.status(400).send({ status: false, message: "Image formate of product is not valid" }) 
+            }
             var updateFileURL = await aws.uploadFile(productImage[0])
             updateData.productImage = updateFileURL
         }
-        if (availableSizes) {
-            if (!isValidSize(availableSizes)) return res.status(400).send({ status: false, message: 'please provide valid Sizes' })
+        if (dataForUpdates.sizes) {
 
-            const updatedProduct = await productModel.findByIdAndUpdate(
-                { _id: productId, isDeleted: false },
-                {
-                    $set: { ...updateData },
-                    $addToSet: { availableSizes: availableSizes }
-                },
-                { new: true }
-            )
-            return res.status(200).send({ status: true, message: "Product updated successfully", data: updatedProduct })
+            let updatedSize = dataForUpdates.sizes.toUpperCase().split(",")
+            for (let i = 0; i < updatedSize.length; i++) {
+                updatedSize[i] = updatedSize[i].trim()
+                if (!["S", "XS", "M", "X", "L", "XXL", "XL",].includes(updatedSize[i])) {
+                    return res.status(400).send({ status: false, message: `Sizes should be ${["S", "XS", "M", "X", "L", "XXL", "XL"]}` })
+                }
+            }
+            updateData.availableSizes = updatedSize
         }
-
-        const updatedProduct = await productModel.findByIdAndUpdate({ _id: productId }, { ...updateData }, { new: true })
+        const updatedProduct = await productModel.findOneAndUpdate({ _id: productId, isDeleted:false }, {$set:{ ...updateData }}, { new: true })
+        if(!updatedProduct) {return res.status(404).send({ status:false,message:"Product not found to update"})}
         return res.status(200).send({ status: true, message: "Success", data: updatedProduct })
     }
     catch (err) {

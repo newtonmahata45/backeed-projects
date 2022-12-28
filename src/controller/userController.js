@@ -26,7 +26,6 @@ const registerUser = async (req, res) => {
 
         address = JSON.parse(address)
         data.address = address
-
         if (!address.shipping) { return res.status(400).send({ status: false, message: "shipping address is mandatory" }) }
         if (!address.shipping.street) { return res.status(400).send({ status: false, message: "street is mandatory in shipping address" }) }
         if (!address.shipping.city) { return res.status(400).send({ status: false, message: "city is mandatory in shipping address" }) }

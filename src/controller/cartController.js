@@ -45,7 +45,6 @@ const addToCart = async function (req, res) {
         if (cartDetails.items.length == (i || 0)) {
             cartDetails.items.push({ productId: productId, quantity: quantity })
         }
-
         cartDetails.totalPrice = cartDetails.totalPrice + (productDetails.price * quantity)
         cartDetails.totalItems = cartDetails.items.length
 
@@ -53,7 +52,7 @@ const addToCart = async function (req, res) {
         if (newCart) {
             return res.status(201).send({ status: true, message: "Success", data: cartData })
         } else {
-            return res.status(201).send({ status: true, message: "Success", data: cartData })
+            return res.status(200).send({ status: true, message: "Success", data: cartData })
 
         }
 

@@ -1,7 +1,7 @@
 const userModel = require("../model/userModel")
 const productModel = require("../model/productModel")
 const cartModel = require("../model/cartModel")
-const { isValidObjectId, isValidPassword, isValidName, isValidString, isValidImage, isValidEmail, isValidPincode, isValidMobile } = require("../validator/validator")
+const { isValidObjectId } = require("../validator/validator")
 const orderModel = require("../model/orderModel")
 
 
@@ -19,32 +19,30 @@ const createOrder = async function (req, res) {
         }
         const findCart = await cartModel.findById(cartId)
         if (!findCart) {
-            return res.status(404).send({ status: false, message: "Cart is not Exists" })
+            return res.status(404).send({ status: false, message: "Cart dose not Exists" })
         }
         let cartUserId = findCart.userId
         if (!userId == cartUserId) {
             return res.status(400).send({
-                status: false, message: `Please provide  user valid cartId
-        ${findCart._id}`
+                status: false, message: `Please provide  user valid cartId ${findCart._id}`
             })
         }
         if (findCart.items.length == 0) return res.status(400).send({ status: false, message: "Your cart is empty", data: findCart })
 
         let itemArray = findCart.items
         for (let i = 0; i < itemArray.length; i++) {
-
-            var product = await productModel.findOne({ _id: itemArray[i].productId, isDeleted: false })
-            if (!product) {
+            let product = await productModel.findOne({ _id: itemArray[i].productId })
+            if (product.isDeleted) {
+                findCart.totalPrice = findCart.totalPrice - (itemArray[i].quantity * product.price)
                 itemArray.splice(itemArray[i], 1)
             }
         }
 
-        // Total Price && Quantity => 
-        let totalPrice = 0;
+        // Total Price && Quantity =>
+        let totalPrice = findCart.totalPrice;
         let totalQuantity = 0;
-        for (let i = 0; i < itemArray.length; i++) {
-            totalPrice = totalPrice + (itemArray[i].quantity * product.price)
-            totalQuantity = totalQuantity + itemArray[i].quantity
+        for (let j = 0; j < itemArray.length; j++) {
+            totalQuantity = totalQuantity + itemArray[j].quantity
         }
 
         let order = {
@@ -53,10 +51,11 @@ const createOrder = async function (req, res) {
             totalPrice: totalPrice,
             totalItems: itemArray.length,
             totalQuantity: totalQuantity,
+            cancellable: req.body.cancellable
         }
 
         const createOrder = await orderModel.create(order)
-        await cartModel.updateOne({ userId: userId }, { $set: { items: [], totalPrice: 0, totalItems: 0 } })
+        await cartModel.findOneAndUpdate({ userId: userId }, { $set: { items: [], totalPrice: 0, totalItems: 0 } })
         return res.status(201).send({ status: true, message: 'Success', data: createOrder })
     }
     catch (err) {
@@ -86,14 +85,14 @@ const updateOrder = async function (req, res) {
         if (findOrder.status == "completed")
             return res.status(400).send({ status: false, message: "Can Not Update This Order, Because It's Completed Already" })
 
-        if (findOrder.status == "cancelled")
+        if (findOrder.status == "canceled")
             return res.status(400).send({ status: false, message: "Can Not Update This Order, Because It's Cancelled Already" })
 
         if (findOrder.userId != userId) return res.status(403).send({ status: false, message: "order is not blong to the user " })
 
         if (status == "canceled") {
             // if(findOrder.cancellable==false)
-            if (!findOrder.cancellable) return res.status(400).send({ status: false, message: "this order is not cancleble" })
+            if (!findOrder.cancellable) return res.status(400).send({ status: false, message: "This order is not cancellable" })
         }
         const updateOrder = await orderModel.findOneAndUpdate({ _id: orderId }, { $set: { status: status } }, { new: true })
 
