@@ -188,7 +188,7 @@ let updateProductById = async (req, res) => {
         }
         
         if (dataForUpdates.price) {
-            price = JSON.parse(price)
+            dataForUpdates.price = JSON.parse(price)
         
             if (!isNumber(dataForUpdates.price)) return res.status(400).send({ status: false, message: 'please provide price in digits' })
             updateData.price= price

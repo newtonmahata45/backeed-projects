@@ -52,7 +52,7 @@ const addToCart = async function (req, res) {
         if(newCart) {
             return res.status(201).send({ status: true, message: "Success", data: cartData })
         } else {
-            return res.status(200).send({ status: true, message: "Success", data: cartData })
+            return res.status(201).send({ status: true, message: "Success", data: cartData })
 
         }
 
@@ -99,9 +99,9 @@ const updateCart = async function (req, res) {
 
             let cartData = await cartModel.findOneAndUpdate({ userId: userId }, {$set:{...theCart}}, { new: true })
             if (theLength != theCart.items.length) {
-                return res.status(200).send({ status: true, message: "Product Removed From Your Cart", data: cartData })
+                return res.status(200).send({ status: true, message: "Success", data: cartData })
             } else {
-                return res.status(200).send({ status: true, message: "Product Quantity Decreased From Your Cart", data: cartData })
+                return res.status(200).send({ status: true, message: "Success", data: cartData })
             }
 
         }
