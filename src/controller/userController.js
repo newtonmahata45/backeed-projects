@@ -193,7 +193,7 @@ let updateUserProfile = async function (req, res) {
             if (address.shipping) {
                 if (address.shipping.street) {
                     if (!isValidString(address.shipping.street)) { return res.status(400).send({ status: false, message: "street is not valid in shipping address" }) }
-                    updateData.address.shipping.street = address.billing.street
+                    updateData.address.shipping.street = address.shipping.street
 
                 }
                 if (address.shipping.city) {

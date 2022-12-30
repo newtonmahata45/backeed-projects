@@ -2,7 +2,6 @@ const express = require("express")
 const mongoose = require("mongoose")
 const route = require("./src/routes/route")
 const multer = require("multer");
-const { AppConfig } = require('aws-sdk');
 
 const app = express()
 
@@ -22,9 +21,6 @@ app.use((req, res) => {
     return res.status(400).send({ status: false, message: "End point is incorrect" })
 });
 
-
-const PORT = 3000
-
-app.listen(PORT, () => {
-    console.log(`Express app is running on port ${PORT}`)
+app.listen(process.env.PORT || 3000, () => {
+    console.log(`Express app is running on port:`, (process.env.PORT || 3000))
 })

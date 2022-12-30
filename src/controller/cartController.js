@@ -53,7 +53,6 @@ const addToCart = async function (req, res) {
             return res.status(201).send({ status: true, message: "Success", data: cartData })
         } else {
             return res.status(200).send({ status: true, message: "Success", data: cartData })
-
         }
 
     } catch (err) {
@@ -73,7 +72,7 @@ const updateCart = async function (req, res) {
         if (!isValidObjectId(cartId)) { return res.status(400).send({ status: false, message: "cart id not valid id" }) }
         if (!isValidObjectId(productId)) { return res.status(400).send({ status: false, message: "product id not valid id" }) }
 
-        if (removeProduct != 0 && removeProduct != 1) { return res.status(400).send({ status: false, message: "removeProduct can be 0 or 1" }) }
+        if (removeProduct != 0 && removeProduct != 1 ) { return res.status(400).send({ status: false, message: "removeProduct can be 0 or 1" }) }
 
         const theCart = await cartModel.findById(cartId)
         if (!theCart) return res.status(404).send({ status: false, message: "Cart does not found" })

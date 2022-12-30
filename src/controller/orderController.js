@@ -1,4 +1,3 @@
-const userModel = require("../model/userModel")
 const productModel = require("../model/productModel")
 const cartModel = require("../model/cartModel")
 const { isValidObjectId } = require("../validator/validator")

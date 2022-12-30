@@ -149,7 +149,7 @@ let updateProductById = async (req, res) => {
         if (!isValidObjectId(productId)) return res.status(400).send({ status: false, message: "Please enter valid productId" })
         
         //  CHECK : if there is no data for updatation
-        if (!(dataForUpdates && productImage)) return res.status(400).send({ status: false, message: 'please provide some data for upadte profile' })
+        if (!(dataForUpdates && productImage)) return res.status(400).send({ status: false, message: 'please provide some data for update product' })
 
         let { title, description, isFreeShipping, style } = dataForUpdates
 
